@@ -24,12 +24,12 @@ module BigQueryAdapter
 
       options = {}
       options[:timeout] = @timeout if @timeout
-      results = @bigquery.query(statement, options) # ms
-      if results.complete?
-        columns = results.first.keys.map(&:to_s) unless results.empty?
-        rows = results.map(&:values)
+      job = @bigquery.query_job(statement, options) # ms
+      job.wait_until_done!
+      unless job.failed?
+        columns = job.data.headers
+        rows = job.data.map(&:values)
       end
-
       Result.new(columns, rows)
     end
 
