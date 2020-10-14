@@ -1,5 +1,4 @@
 require 'active_record'
-require 'arel/visitors/bind_visitor'
 
 require 'big_query_adapter/connection'
 require 'big_query_adapter/database_statements'
@@ -100,18 +99,6 @@ module ActiveRecord
         else
           super
         end
-      end
-
-      # no-doc
-      class BindSubstitution < Arel::Visitors::ToSql
-        include Arel::Visitors::BindVisitor
-      end
-
-      # Using a BindVisitor so that the SQL string gets substituted before it is
-      # sent to the DBMS (to attempt to get as much coverage as possible for
-      # DBMSs we don't support).
-      def arel_visitor
-        BindSubstitution.new(self)
       end
 
       # Explicitly turning off prepared_statements in the null adapter because
